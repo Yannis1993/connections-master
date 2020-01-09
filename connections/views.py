@@ -34,6 +34,14 @@ def create_person(person):
         return flask.jsonify(res), HTTPStatus.BAD_REQUEST
 
 
+@blueprint.route('/connections', methods=['GET'])
+def get_connection():
+    connection_schema = ConnectionSchema(many=True)
+    connection = Connection.query.all()
+    return connection_schema.jsonify(connection), HTTPStatus.OK
+# TODO: Return with peoples full details
+
+
 @blueprint.route('/connections', methods=['POST'])
 @use_args(ConnectionSchema(), locations=('json',))
 def create_connection(connection):
