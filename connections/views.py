@@ -1,10 +1,16 @@
 from http import HTTPStatus
 
+import flask
 from flask import Blueprint
 from webargs.flaskparser import use_args
 
 from connections.models.person import Person
+from connections.models.connection import Connection
 from connections.schemas import ConnectionSchema, PersonSchema
+
+import re
+
+EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
 
 blueprint = Blueprint('connections', __name__)
 
@@ -19,8 +25,13 @@ def get_people():
 @blueprint.route('/people', methods=['POST'])
 @use_args(PersonSchema(), locations=('json',))
 def create_person(person):
-    person.save()
-    return PersonSchema().jsonify(person), HTTPStatus.CREATED
+    errors = {}
+    if validate(person, errors):
+        person.save()
+        return PersonSchema().jsonify(person), HTTPStatus.CREATED
+    else:
+        res = {"description": "Input failed validation.", "errors": errors}
+        return flask.jsonify(res), HTTPStatus.BAD_REQUEST
 
 
 @blueprint.route('/connections', methods=['POST'])
@@ -28,3 +39,13 @@ def create_person(person):
 def create_connection(connection):
     connection.save()
     return ConnectionSchema().jsonify(connection), HTTPStatus.CREATED
+
+
+def validate(person, errors):
+    if person.email is None:
+        errors["email"] = "Field may not be null"
+    if not EMAIL_REGEX.match(person.email):
+        errors["email"] = "Not a valid email address."
+    if person.first_name is None:
+        errors["first_name"] = "Field may not be null"
+    return False if len(errors) > 0 else True
