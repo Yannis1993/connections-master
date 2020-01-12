@@ -1,4 +1,6 @@
-from factory import Faker, Sequence, SubFactory
+from random import randrange
+
+from factory import Faker, Sequence, SubFactory, RelatedFactory, SelfAttribute
 from factory.alchemy import SQLAlchemyModelFactory
 
 from connections.database import db
@@ -17,6 +19,7 @@ class BaseFactory(SQLAlchemyModelFactory):
 
 class PersonFactory(BaseFactory):
     """Person factory."""
+    id = Sequence(lambda n: randrange(100000))
 
     email = Sequence(lambda n: f'person{n}@example.com')
     first_name = Faker('first_name')
@@ -32,8 +35,8 @@ class ConnectionFactory(BaseFactory):
 
     connection_type = 'friend'
 
-    from_person = SubFactory(PersonFactory)
-    to_person = SubFactory(PersonFactory)
+    from_person_id = SubFactory(PersonFactory)
+    to_person_id = SubFactory(PersonFactory)
 
     class Meta:
 

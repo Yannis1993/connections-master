@@ -40,6 +40,8 @@ services:
       - connections
 
   connections:
+    environment:
+      - DEBUG=1
     image: connections:dev
     build: .
     env_file:

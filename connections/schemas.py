@@ -12,7 +12,6 @@ class BaseModelSchema(ma.ModelSchema):
 
 
 class PersonSchema(BaseModelSchema):
-
     class Meta:
         model = Person
 

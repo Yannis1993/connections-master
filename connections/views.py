@@ -1,16 +1,17 @@
 from http import HTTPStatus
+from pprint import pprint
 
 import flask
 from flask import Blueprint
+from sqlalchemy.orm import aliased
 from webargs.flaskparser import use_args
 
+from connections.extensions import db
 from connections.models.person import Person
 from connections.models.connection import Connection
 from connections.schemas import ConnectionSchema, PersonSchema
 
-import re
-
-EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
+from connections.util import result_connection_to_json, validate
 
 blueprint = Blueprint('connections', __name__)
 
@@ -19,6 +20,7 @@ blueprint = Blueprint('connections', __name__)
 def get_people():
     people_schema = PersonSchema(many=True)
     people = Person.query.all()
+    pprint(type(people[0]))
     return people_schema.jsonify(people), HTTPStatus.OK
 
 
@@ -36,10 +38,11 @@ def create_person(person):
 
 @blueprint.route('/connections', methods=['GET'])
 def get_connection():
-    connection_schema = ConnectionSchema(many=True)
-    connection = Connection.query.all()
-    return connection_schema.jsonify(connection), HTTPStatus.OK
-# TODO: Return with peoples full details
+    a_person = aliased(Person)
+    result = db.session.query(Connection, Person, a_person)\
+        .join(Person, Connection.to_person_id == Person.id)\
+        .join(a_person, Connection.from_person_id == a_person.id).all()
+    return result_connection_to_json(result), HTTPStatus.OK
 
 
 @blueprint.route('/connections', methods=['POST'])
@@ -49,11 +52,4 @@ def create_connection(connection):
     return ConnectionSchema().jsonify(connection), HTTPStatus.CREATED
 
 
-def validate(person, errors):
-    if person.email is None:
-        errors["email"] = "Field may not be null"
-    if not EMAIL_REGEX.match(person.email):
-        errors["email"] = "Not a valid email address."
-    if person.first_name is None:
-        errors["first_name"] = "Field may not be null"
-    return False if len(errors) > 0 else True
+
