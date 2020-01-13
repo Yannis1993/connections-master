@@ -87,6 +87,31 @@ paths:
               $ref: "#/definitions/Connection"
         400:
           description: "Invalid input"
+    patch:
+        summary: "Update a connection"
+        description: "update existing connection_type of a connection"
+        operationId: "updateConnection"
+        consumes:
+            - "application/json"
+        produces:
+            - "application/json"
+        parameters:
+            -   in: "body"
+                name: "body"
+                description: "Connection object that needs to be updated"
+                required: true
+                schema:
+                    $ref: "#/definitions/Connection/<int:connection_id>"
+        responses:
+            200:
+                description: "successful operation"
+                schema:
+                    type: "object"
+                    items:
+                        $ref: "#/definitions/Connection"
+            400:
+                description: "Connection ID does not exist."
+
 definitions:
   Person:
     type: "object"

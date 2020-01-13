@@ -19,5 +19,4 @@ class Person(Model, CRUDMixin, CreatedUpdatedMixin):
                     and connection_self.connection_type == 'friend' \
                     and connection_target.to_person_id == connection_self.to_person_id:
                     mutual_friends.append(Person.query.get(connection_target.to_person_id))
-        pprint(mutual_friends)
         return mutual_friends
