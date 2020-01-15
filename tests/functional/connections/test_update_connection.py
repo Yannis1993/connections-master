@@ -4,13 +4,13 @@ from tests.factories import PersonFactory, ConnectionFactory
 
 
 def test_can_update_connection(db, testapp):
-    ConnectionFactory(from_person_id=PersonFactory().id, to_person_id=PersonFactory().id,
-                      connection_type="friend")
+    person = ConnectionFactory(from_person=PersonFactory(), to_person_id=PersonFactory(),
+                               connection_type="friend")
     db.session.commit()
     payload = {
         'connection_type': 'mother'
     }
-    res = testapp.patch('/connections/1', json=payload)
+    res = testapp.patch('/connections/' + str(person.id), json=payload)
 
     assert res.status_code == HTTPStatus.OK
     assert 'id' in res.json

@@ -19,7 +19,6 @@ class BaseFactory(SQLAlchemyModelFactory):
 
 class PersonFactory(BaseFactory):
     """Person factory."""
-    id = Sequence(lambda n: randrange(100000))
 
     email = Sequence(lambda n: f'person{n}@example.com')
     first_name = Faker('first_name')
@@ -35,8 +34,8 @@ class ConnectionFactory(BaseFactory):
 
     connection_type = 'friend'
 
-    from_person_id = SubFactory(PersonFactory)
-    to_person_id = SubFactory(PersonFactory)
+    from_person = SubFactory(PersonFactory)
+    to_person = SubFactory(PersonFactory)
 
     class Meta:
 

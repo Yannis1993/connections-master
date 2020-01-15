@@ -21,7 +21,8 @@ def validate(person, errors):
 
 
 # Manual to Json conversion as flask.jsonify is limited in this situation
-# Probably need to use flask-restful or a different
+# Probably need to use flask-restful for instance
+# Or maybe the object Person can be returned entirely without doing a join ?
 def result_connection_to_json(result):
     response = []
     for row in result:

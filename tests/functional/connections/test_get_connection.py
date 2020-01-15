@@ -14,8 +14,7 @@ EXPECTED_FIELDS = [
 
 
 def test_can_get_connections(db, testapp):
-    for x in range(5):
-        ConnectionFactory(from_person_id=PersonFactory().id, to_person_id=PersonFactory().id)
+    ConnectionFactory.create_batch(5, from_person_id=PersonFactory(), to_person_id=PersonFactory())
 
     db.session.commit()
 

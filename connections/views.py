@@ -1,5 +1,4 @@
 from http import HTTPStatus
-from pprint import pprint
 
 import flask
 from flask import Blueprint
@@ -20,7 +19,6 @@ blueprint = Blueprint('connections', __name__)
 def get_people():
     people_schema = PersonSchema(many=True)
     people = Person.query.all()
-    pprint(type(people[0]))
     return people_schema.jsonify(people), HTTPStatus.OK
 
 
